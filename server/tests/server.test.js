@@ -7,15 +7,19 @@ const {Todo} = require('./../models/todo');
 const dummyTodos = [
   {
     _id: new ObjectID('5c28f106d777e44a5200b3d3'),
-    text: "Something todo"
+    text: "Something todo",
+    completed: false
   },
   {
     _id: new ObjectID('5c28f106d777e44a5200b3d4'),
-    text: "Something else todo"
+    text: "Something else todo",
+    completed: false,
   },
   {
     _id: new ObjectID('5c28f106d777e44a5200b3d5'),
-    text: "Just another task"
+    text: "Just another task",
+    completed: true,
+    completedAt: 333
   },
   {
     _id: new ObjectID('5c28f106d777e44a5200b3d6'),
@@ -163,6 +167,39 @@ describe('DELETE /todos/:id route', () => {
       .expect(404)
       .end(done);
 
+  });
+
+});
+
+
+describe('PATCH /todos/:id', () => {
+
+  it('should update the todo and set completedAt param', (done) => {
+
+    var hexID = dummyTodos[3]._id.toHexString();
+    request(app)
+    .patch(`/todos/${hexID}`)
+    .send({completed: true, text: 'updated text'})
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.todo.completed).toBeTruthy();
+      expect(res.body.todo.text).toBe('updated text');
+      expect(typeof res.body.todo.completedAt).toBe('number');
+    })
+    .end(done);
+  });
+
+  it('should update the todo and unset completedAt param', (done) => {
+    var hexID = dummyTodos[2]._id.toHexString();
+    request(app)
+    .patch(`/todos/${hexID}`)
+    .send({ completed: false })
+    .expect(200)
+    .expect((res) => {
+      expect(res.body.todo.completed).not.toBeTruthy();
+      expect(res.body.todo.completedAt).not.toBeTruthy();
+    })
+    .end(done);
   });
 
 });
