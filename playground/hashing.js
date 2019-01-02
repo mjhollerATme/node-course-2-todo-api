@@ -10,12 +10,15 @@ console.log(token);
 var decoded = jwt.verify(token, 'somesecretstring-salt');
 console.log(decoded);
 
+
+
 // var message = 'I am user nr. 3';
 // var hash = SHA256(message).toString();
 //
 // console.log(`Message: ${message}`);
 // console.log(`hash: ${hash}`);
-//
+
+
 // var data = {
 //   id: 4
 // };

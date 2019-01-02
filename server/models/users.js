@@ -47,6 +47,7 @@ UserSchema.methods.generateAuthToken = function() {
   // method to be called on individual user. Signs a token and returns it
   var user = this;
   var access = 'auth';
+  // generate token from user id and access method
   var token = jwt.sign({
     _id: user._id.toHexString(), access
   }, 'abc123').toString();
@@ -62,6 +63,24 @@ UserSchema.methods.generateAuthToken = function() {
     return token; // for promise chaining also just a successful value can be passed instead of a promise
   });
 
+};
+
+// statics = model method as opposed to instance method
+UserSchema.statics.findByToken = function(token) {
+  var User = this;
+  var decoded;
+
+  try {
+    decoded = jwt.verify(token, 'abc123'); // returns decoded data
+  } catch(e) {
+    return Promise.reject(); // short version to return a rejected promise
+  }
+
+  return User.findOne({
+    '_id': decoded._id, // user id saved in decoded token
+    'tokens.token': token,
+    'tokens.access': 'auth'
+  })
 };
 
 var User = mongoose.model('User', UserSchema);
